@@ -128,9 +128,9 @@ def run_evolution(
     return population, i
 
 population, generations = run_evolution(
-    populate_func=partial(generate_population, size=10, genome_length=len(things)),
-    fitness_func=partial(fitness, things=things, weight_limit=3000),
-    fitness_limit=740,
+    populate_func=partial(generate_population, size=10, genome_length=len(more_things)),
+    fitness_func=partial(fitness, things=more_things, weight_limit=3000),
+    fitness_limit=1310,
     generation_limit=100
 )
 
@@ -144,4 +144,4 @@ def genome_to_things(genome: Genome, things: [Thing]) -> [Thing]:
 
 
 print(f"Number of generations: {generations}")
-print(f"Best solution: {genome_to_things(population[0], things)}")
+print(f"Best solution: {genome_to_things(population[0], more_things)}")
