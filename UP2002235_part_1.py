@@ -96,7 +96,7 @@ def selection_pair(population: Population, fitness_func: FitnessFunc) -> Populat
 
 def single_point_crossover(a: Chromosome, b: Chromosome) -> Tuple[Chromosome, Chromosome]:
     """
-    The single point crossover function takes two chromosomes are parameters and returns two chromosomes as output.
+    The single point crossover function takes two chromosomes as parameters and returns two chromosomes as output.
 
     :param a: Chromosome a
     :type a: Chromosome
