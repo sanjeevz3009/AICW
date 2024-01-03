@@ -126,7 +126,7 @@ def single_point_crossover(a: Chromosome, b: Chromosome) -> Tuple[Chromosome, Ch
     return a[0:p] + b[p:], b[0:p] + a[p:]
 
 
-def mutation(chromosome: Chromosome, num: int = 1, probability: float = 0.5) -> Chromosome:
+def mutation(chromosome: Chromosome, num: int = 1, mutation_rate: float = 0.1) -> Chromosome:
     """
     The mutation function takes Chromosome and a certain probability to change 1s to 0s and 0s to 1s at random positions.
 
@@ -134,8 +134,8 @@ def mutation(chromosome: Chromosome, num: int = 1, probability: float = 0.5) -> 
     :type chromosome: Chromosome
     :param num: Number is times to mutate, defaults to 1
     :type num: int, optional
-    :param probability: Probability of mutation, defaults to 0.5
-    :type probability: float, optional
+    :param mutation_rate: Probability of mutation, defaults to 0.01
+    :type mutation_rate: float, optional
     :return: Return a mutated Chromosome
     :rtype: Chromosome
     """
@@ -146,7 +146,7 @@ def mutation(chromosome: Chromosome, num: int = 1, probability: float = 0.5) -> 
         # Otherwise it is in our mutation probability and we need to change it to the absolute 
         # value of the current value minus one
         # This is because e.g. abs(1 - 1) = abs(0) = 0, abs(0 - 1) = abs(-1) = 1
-        chromosome[index] = chromosome[index] if random() > probability else abs(chromosome[index] - 1)
+        chromosome[index] = chromosome[index] if random() > mutation_rate else abs(chromosome[index] - 1)
 
     return chromosome
 
@@ -210,7 +210,6 @@ def genetic_algorithm(
         # Generate all new solutions for our next generation
         # We pick two parents and get two new solutions every time
         # So we loop for half the length of a generation to get as many solutions in our next generation as before
-        # 
         for j in range(int(len(population) / 2) - 1):
             # We call the selection functions to get our parents
             parents = selection_func(population, fitness_func)
