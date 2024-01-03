@@ -1,4 +1,3 @@
-from collections import namedtuple
 # Partial functions in Python is a function that is created by fixing a certain number
 # of arguments of another function
 # I will be using partial functions in this code to create specialised callbacks
@@ -14,6 +13,11 @@ from typing import List, Callable, Tuple
 from random import choices, randint, randrange, random
 
 
+
+initial_chromosome = [1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0]
+# Define the target chromosome
+target_chromosome = [1] * 32
+
 # Type hinting for variables, tuples and partial functions
 Genome = List[int]
 Population = List[Genome]
@@ -22,26 +26,6 @@ PopulateFunc = Callable[[], Population]
 SelectionFunc = Callable[[Population, FitnessFunc], Tuple[Genome, Genome]]
 CrossoverFunc = Callable[[Genome, Genome], Tuple[Genome, Genome]]
 MutationFunc = Callable[[Genome], Genome]
-Thing = namedtuple("Thing", ["name", "value", "weight"])
-
-
-things = [
-    Thing("Laptop", 500, 2200),
-    Thing("Headphones", 150, 160),
-    Thing("Coffee Mug", 60, 350),
-    Thing("Notepad", 40, 333),
-    Thing("Water Bottle", 30, 192)
-]
-
-
-more_things = [
-    Thing("Mints", 5, 25),
-    Thing("Socks", 10, 38),
-    Thing("Tissues", 15, 80),
-    Thing("Phone", 500, 200),
-    Thing("Baseball Cap", 100, 70)
-] + things
-
 
 
 def generate_genome(length: int) -> Genome:
@@ -72,45 +56,18 @@ def generate_population(size: int, genome_length: int) -> Population:
     return [generate_genome(genome_length) for _ in range(size)]
 
 
-def fitness(genome: Genome, things: [Thing], weight_limit: int) -> int:
-    """
-    To take the genome and calculate the fitness value.
-    The fitness function below takes the genome and returns a fitness value
+def fitness(genome: Genome, target_chromosome) -> int:
+    """_summary_
 
-    :param genome: Genome in a list which contains 0s and 1s.
+    :param genome: _description_
     :type genome: Genome
-    :param things: _description_
-    :type things: [Thing]
-    :param weight_limit: _description_
-    :type weight_limit: int
-    :raises ValueError: _description_
-    :return: Fitness value returned
+    :param target_chromosome: _description_
+    :type target_chromosome: _type_
+    :return: _description_
     :rtype: int
     """
-    if len(genome) != len(things):
-        raise ValueError("genome and things must be of the same length")
-    
-    weight = 0
-    value = 0
-
-    # To calculate the fitness we iterate through all things and check
-    # if it's part of the solution by checking if the genome has a 1
-    # at the given index
-    for i, thing in enumerate(things):
-        # If it has we add the wight and the value of this item to our accumulation
-        # variables
-        if genome[i] == 1:
-            weight += thing.weight
-            value += thing.value
-
-            # As soon the weight exceeds the weight limit, we abort iteration
-            # and we return a fitness value of 0
-            if weight > weight_limit:
-                return 0
-
-    # If we managed to get to the end of the list of things without exceeding
-    # the weight limit, we are returning the accumulated value
-    return value
+    # Calculate fitness based on the number of matching bits with the target chromosome
+    return sum(g == t for g, t in zip(genome, target_chromosome))
 
 
 def selection_pair(population: Population, fitness_func: FitnessFunc) -> Population:
@@ -196,7 +153,7 @@ def mutation(genome: Genome, num: int = 1, probability: float = 0.5) -> Genome:
 def run_evolution(
         populate_func: PopulateFunc,
         fitness_func: FitnessFunc,
-        fitness_limit: int,
+        target_chromosome: Genome,
         selection_func: SelectionFunc = selection_pair,
         crossover_func: CrossoverFunc = single_point_crossover,
         mutation_func: MutationFunc = mutation,
@@ -209,9 +166,8 @@ def run_evolution(
     :type populate_func: PopulateFunc
     :param fitness_func: Calculates the fitness values for the population
     :type fitness_func: FitnessFunc
-    :param fitness_limit: Defines one condition as if the fitness limit of the best solution
-    exceeds this limit we are done and reached our goal
-    :type fitness_limit: int
+    :param target_chromosome: Defines the target chromosome
+    :type target_chromosome: Genome
     :param selection_func: Selects the pair of solutions, which will be the parents of two new solutions of the next generation.
     , defaults to selection_pair
     :type selection_func: SelectionFunc, optional
@@ -240,8 +196,8 @@ def run_evolution(
             reverse=True
         )
 
-        # Check if we have already reached the fitness limit
-        if fitness_func(population[0]) >= fitness_limit:
+        # Check if the best solution matches the target chromosome
+        if population[0] == target_chromosome:
             break
 
         # We keep our top two solutions for our next generation
@@ -283,21 +239,13 @@ population, generations = run_evolution(
     # The partial populate_func helps us preset the parameters which are specific to our current problem
     # That's how we can adjust our population function without handing the population size and genome length
     # to the run_evolution function and without the need to write a completely new populate function
-    populate_func=partial(generate_population, size=10, genome_length=len(more_things)),
+    populate_func=partial(generate_population, size=10, genome_length=len(target_chromosome)),
     # We hand over the list of things to our fitness function and predefined the weight to be 3KG
-    fitness_func=partial(fitness, things=more_things, weight_limit=3000),
-    fitness_limit=1310,
+    fitness_func=partial(fitness, target_chromosome=target_chromosome),
+    target_chromosome=target_chromosome,
     generation_limit=100
 )
 
-def genome_to_things(genome: Genome, things: [Thing]) -> [Thing]:
-    result = []
-    for i, thing in enumerate(things):
-        if genome[i] == 1:
-            result += [thing.name]
-
-    return result
-
 
 print(f"Number of generations: {generations}")
-print(f"Best solution: {genome_to_things(population[0], more_things)}")
+print(f"Best solution: {population[0]}")
