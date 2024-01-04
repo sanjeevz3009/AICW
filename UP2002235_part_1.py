@@ -71,7 +71,7 @@ def fitness(chromosome: Chromosome, target_chromosome: Chromosome) -> int:
     :rtype: int
     """
     # Calculate fitness based on the number of matching bits with the target chromosome
-    print("fitness: ", sum(g == t for g, t in zip(chromosome, target_chromosome)))
+    print(f"Chromosome: {chromosome}, Fitness: {sum(g == t for g, t in zip(chromosome, target_chromosome))}")
     return sum(g == t for g, t in zip(chromosome, target_chromosome))
 
 
@@ -161,7 +161,7 @@ def mutation(chromosome: Chromosome, num: int = 1, mutation_rate: float = 0.1) -
         # This is because e.g. abs(1 - 1) = abs(0) = 0, abs(0 - 1) = abs(-1) = 1
         chromosome[index] = chromosome[index] if random() > mutation_rate else abs(chromosome[index] - 1)
     
-    print("single_point_crossover: ", chromosome)
+    print("Mutation: ", chromosome)
     print("\n")
     return chromosome
 
@@ -212,6 +212,7 @@ def genetic_algorithm(
             reverse=True
         )
 
+        print("\n")
         print(f"Generation {i + 1}: ")
         print("\n")
         # print(f"Generation {population}:\n\n")
@@ -268,3 +269,6 @@ population, generations = genetic_algorithm(
 
 print(f"Number of generations: {generations}")
 print(f"Best solution: {population[0]}")
+
+# Replace selection_pair function with roulette selection method
+# Looking into cumulative fitness
