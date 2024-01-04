@@ -13,7 +13,8 @@ from typing import List, Callable, Tuple
 from random import choices, randint, randrange, random
 
 
-initial_chromosome = [1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0]
+# We don't need this as we aren't doing anything with this
+# initial_chromosome = [1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0]
 # Define the target chromosome
 target_chromosome = [1] * 32
 
@@ -194,7 +195,7 @@ def genetic_algorithm(
     :type mutation_func: MutationFunc, optional
     :param generation_limit: The maximum number of generations our algorithm runs for if it's not reaching the fitness limit before that, defaults to 100
     :type generation_limit: int, optional
-    :return: _description_
+    :return: Returns the final generation/ population of chromosomes and the amount of generations it took to get there
     :rtype: Tuple[Population, int]
     """
     population = populate_func()
@@ -257,11 +258,11 @@ population, generations = genetic_algorithm(
     # The partial populate_func helps us preset the parameters which are specific to our current problem
     # That's how we can adjust our population function without handing the population size and chromosome length
     # to the genetic_algorithm function and without the need to write a completely new populate function
-    populate_func=partial(generate_population, size=10, chromosome_length=len(target_chromosome)),
+    populate_func=partial(generate_population, size=10, chromosome_length=32),
     # We hand over the list of things to our fitness function and predefined the weight to be 3KG
     fitness_func=partial(fitness, target_chromosome=target_chromosome),
     target_chromosome=target_chromosome,
-    generation_limit=5
+    generation_limit=100
 )
 
 
