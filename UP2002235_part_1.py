@@ -82,6 +82,7 @@ def fitness(chromosome: Chromosome, target_chromosome: Chromosome) -> int:
 def selection_pair(population: Population, fitness_func: FitnessFunc) -> Population:
     """
     Selects the pair of solutions, which will be the parents of two new solutions of the next generation.
+    Roulette Wheel Selection method is used here (Fitness Proportionate Selection).
 
     :param population: Lists of chromosome
     :type population: Population
@@ -95,28 +96,43 @@ def selection_pair(population: Population, fitness_func: FitnessFunc) -> Populat
     # By handing over the fitness of a Chromosome as it's weight the fittest solutions
     # are most likely to be chosen for reproduction
     # k=2 specifies that we draw twice from our population to get a pair
-    print(
-        "selection_pair: ",
-        choices(
-            population=population,
-            weights=[fitness_func(Chromosome) for Chromosome in population],
-            k=2,
-        ),
-    )
-    print("\n")
+    # print(
+    #     "selection_pair: ",
+    #     choices(
+    #         population=population,
+    #         weights=[fitness_func(Chromosome) for Chromosome in population],
+    #         k=2,
+    #     ),
+    # )
+    # print("\n")
 
-    return choices(
-        population=population,
-        weights=[fitness_func(Chromosome) for Chromosome in population],
-        k=2,
-    )
+    # return choices(
+    #     population=population,
+    #     weights=[fitness_func(Chromosome) for Chromosome in population],
+    #     k=2,
+    # )
+
+    # Calculate the total fitness of the population
+    total_fitness = sum(fitness_func(chromosome) for chromosome in population)
+    
+    # Normalize the fitness scores for each individual
+    fitnesses = [fitness_func(chromosome) / total_fitness for chromosome in population]
+    
+    # Select two individuals using the normalized fitness scores as weights
+    parent1 = choices(population, weights=fitnesses, k=1)[0]
+    parent2 = choices(population, weights=fitnesses, k=1)[0]
+    
+    parents = [parent1, parent2]
+    
+    return parents
 
 
 def single_point_crossover(
     a: Chromosome, b: Chromosome
 ) -> Tuple[Chromosome, Chromosome]:
     """
-    The single point crossover function takes two chromosomes as parameters and returns two chromosomes as output.
+    The single point crossover function takes two chromosomes as parameters and returns two chromosomes as output
+    Single point crossover method is used here.
 
     :param a: Chromosome a
     :type a: Chromosome
@@ -153,6 +169,7 @@ def mutation(
 ) -> Chromosome:
     """
     The mutation function takes a chromosome and a certain probability to change 1s to 0s and 0s to 1s at random positions.
+    Bit flip mutation method is used here.
 
     :param chromosome: Chromosome in a list
     :type chromosome: Chromosome
@@ -283,4 +300,5 @@ print(f"Number of generations: {generations}")
 print(f"Best solution: {population[0]}")
 
 # Replace selection_pair function with roulette selection method
-# Looking into cumulative fitness
+# Look into cumulative fitness
+# Don't need a crossover rate
