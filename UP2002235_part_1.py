@@ -1,25 +1,27 @@
-# Partial functions in Python is a function that is created by fixing a certain number
-# of arguments of another function
+# Partial functions in Python is a function that is created by fixing a certain number
+# of arguments of another function
 # I will be using partial functions in this code to create specialised callbacks
 # for cleaner interface for the rest of the code and to help reduce code duplication
 from functools import partial
+
 # Importing typing module for type hinting purposes
 from typing import List, Callable, Tuple
-# Importing choices so we can randomly select values from a specified list
+
+# Importing choices so we can randomly select values from a specified list
 # and set the probability of something being selected
-# Importing randint to select a random value
-# Importing randrange to randomly select values within the valued range of indices
+# Importing randint to select a random value
+# Importing randrange to randomly select values within the valued range of indices
 # Importing random to select floating numbers between 0 and 1
 from random import choices, randint, randrange, random
 
 
-# We don't need this as we aren't doing anything with this
+# We don't need this as we aren't doing anything with this
 # initial_chromosome = [1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0]
 # Define the target chromosome
 target_chromosome = [1] * 32
 
 
-# Type hinting for variables, tuples, functions partial functions
+# Type hinting for variables, tuples, functions partial functions
 Chromosome = List[int]
 Population = List[Chromosome]
 FitnessFunc = Callable[[Chromosome], int]
@@ -39,7 +41,7 @@ def generate_chromosome(length: int) -> Chromosome:
     :return: A Chromosome containing 0s and 1s will be returned in a list
     :rtype: Chromosome
     """
-    print("generate_chromosome: ", choices([0, 1], k=length))
+    print("Initial Population: ", choices([0, 1], k=length))
     print("\n")
     return choices([0, 1], k=length)
 
@@ -71,7 +73,9 @@ def fitness(chromosome: Chromosome, target_chromosome: Chromosome) -> int:
     :rtype: int
     """
     # Calculate fitness based on the number of matching bits with the target chromosome
-    print(f"Chromosome: {chromosome}, Fitness: {sum(g == t for g, t in zip(chromosome, target_chromosome))}")
+    print(
+        f"Chromosome: {chromosome}, Fitness: {sum(g == t for g, t in zip(chromosome, target_chromosome))}"
+    )
     return sum(g == t for g, t in zip(chromosome, target_chromosome))
 
 
@@ -86,26 +90,31 @@ def selection_pair(population: Population, fitness_func: FitnessFunc) -> Populat
     :return: A pair of chromosomes as lists will be returned
     :rtype: Population
     """
-    # Solutions with the higher fitness should be more likely to be chosen
-    # We use the function choices to specify the population, weights and length
-    # By handing over the fitness of a Chromosome as it's weight the fittest solutions
-    # are most likely to be chosen for reproduction
-    # k=2 specifies that we draw twice from our population to get a pair
-    print("selection_pair: ", choices (
-        population=population,
-        weights=[fitness_func(Chromosome) for Chromosome in population],
-        k=2
-        )
+    # Solutions with the higher fitness should be more likely to be chosen
+    # We use the function choices to specify the population, weights and length
+    # By handing over the fitness of a Chromosome as it's weight the fittest solutions
+    # are most likely to be chosen for reproduction
+    # k=2 specifies that we draw twice from our population to get a pair
+    print(
+        "selection_pair: ",
+        choices(
+            population=population,
+            weights=[fitness_func(Chromosome) for Chromosome in population],
+            k=2,
+        ),
     )
     print("\n")
-    return choices (
+
+    return choices(
         population=population,
         weights=[fitness_func(Chromosome) for Chromosome in population],
-        k=2
+        k=2,
     )
 
 
-def single_point_crossover(a: Chromosome, b: Chromosome) -> Tuple[Chromosome, Chromosome]:
+def single_point_crossover(
+    a: Chromosome, b: Chromosome
+) -> Tuple[Chromosome, Chromosome]:
     """
     The single point crossover function takes two chromosomes as parameters and returns two chromosomes as output.
 
@@ -117,29 +126,31 @@ def single_point_crossover(a: Chromosome, b: Chromosome) -> Tuple[Chromosome, Ch
     :return: Return two new Chromosomes as output
     :rtype: Tuple[Chromosome, Chromosome]
     """
-    # Making sure out chromosome are the same length, as otherwise crossover would fail
+    # Making sure out chromosome are the same length, as otherwise crossover would fail
     if len(a) != len(b):
         raise ValueError("Chromosome a and be must be of the same length")
-    
+
     length = len(a)
 
-    # The length of the chromosome has to be at least two as if it's not there wouldn't
-    # be a point to cut them in half/ it's not possible
+    # The length of the chromosome has to be at least two as if it's not there wouldn't
+    # be a point to cut them in half/ it's not possible
     if length < 2:
         return a, b
 
-    # We randomly choose an index to cut it in half 
+    # We randomly choose an index to cut it in half
     p = randint(1, length - 1)
-    # We take the first half of chromosome a and the second half chromosome b
-    # and put them together and return this as our first new solution
+    # We take the first half of chromosome a and the second half chromosome b
+    # and put them together and return this as our first new solution
     # For the second solution we take first half of chromosome b and second half
-    # of chromosome a and put them together
+    # of chromosome a and put them together
     print("single_point_crossover: ", a[0:p] + b[p:], b[0:p] + a[p:])
     print("\n")
-    return a[0:p] + b[p:], b[0:p] + a[p:]
+    return a[:p] + b[p:], b[:p] + a[p:]
 
 
-def mutation(chromosome: Chromosome, num: int = 1, mutation_rate: float = 0.1) -> Chromosome:
+def mutation(
+    chromosome: Chromosome, num: int = 1, mutation_rate: float = 0.1
+) -> Chromosome:
     """
     The mutation function takes a chromosome and a certain probability to change 1s to 0s and 0s to 1s at random positions.
 
@@ -153,27 +164,31 @@ def mutation(chromosome: Chromosome, num: int = 1, mutation_rate: float = 0.1) -
     :rtype: Chromosome
     """
     for _ in range(num):
-        # We chose a random index and if random returns a value higher than probability
+        # We chose a random index and if random returns a value higher than probability
         # we leave it alone
         index = randrange(len(chromosome))
-        # Otherwise it is in our mutation probability and we need to change it to the absolute 
-        # value of the current value minus one
-        # This is because e.g. abs(1 - 1) = abs(0) = 0, abs(0 - 1) = abs(-1) = 1
-        chromosome[index] = chromosome[index] if random() > mutation_rate else abs(chromosome[index] - 1)
-    
+        # Otherwise it is in our mutation probability and we need to change it to the absolute
+        # value of the current value minus one
+        # This is because e.g. abs(1 - 1) = abs(0) = 0, abs(0 - 1) = abs(-1) = 1
+        chromosome[index] = (
+            chromosome[index]
+            if random() > mutation_rate
+            else abs(chromosome[index] - 1)
+        )
+
     print("Mutation: ", chromosome)
     print("\n")
     return chromosome
 
 
 def genetic_algorithm(
-        populate_func: PopulateFunc,
-        fitness_func: FitnessFunc,
-        target_chromosome: Chromosome,
-        selection_func: SelectionFunc = selection_pair,
-        crossover_func: CrossoverFunc = single_point_crossover,
-        mutation_func: MutationFunc = mutation,
-        generation_limit: int = 100,
+    populate_func: PopulateFunc,
+    fitness_func: FitnessFunc,
+    target_chromosome: Chromosome,
+    selection_func: SelectionFunc = selection_pair,
+    crossover_func: CrossoverFunc = single_point_crossover,
+    mutation_func: MutationFunc = mutation,
+    generation_limit: int = 100,
 ) -> Tuple[Population, int]:
     """
     The function that pieces everything together and runs the genetic algorithm.
@@ -201,37 +216,36 @@ def genetic_algorithm(
     population = populate_func()
 
     # We first sort out population by fitness
-    # This way we know that our top solutions are inhabiting of the first indices of our list of
+    # This way we know that our top solutions are inhabiting of the first indices of our list of
     # chromosomes
 
-    # The loops runs till if we reached the fitness limit/ looped for generation limit
+    # The loops runs till if we reached the fitness limit/ looped for generation limit
     for i in range(generation_limit):
         population = sorted(
-            population,
-            key=lambda chromosome: fitness_func(chromosome),
-            reverse=True
+            population, key=lambda chromosome: fitness_func(chromosome), reverse=True
         )
 
+        print("Sorted population: ", population)
         print("\n")
         print(f"Generation {i + 1}: ")
         print("\n")
-        # print(f"Generation {population}:\n\n")
+        print(f"Generation {population}:\n\n")
 
         # Check if the best solution matches the target chromosome
         if population[0] == target_chromosome:
             break
-        
-        # We keep our top two solutions for our next generation
-        next_generation = population[0:2]
 
-        # Generate all new solutions for our next generation
+        # We keep our top two solutions for our next generation
+        next_generation = population[:2]
+
+        # Generate all new solutions for our next generation
         # We pick two parents and get two new solutions every time
-        # So we loop for half the length of a generation to get as many solutions in our next generation as before
+        # So we loop for half the length of a generation to get as many solutions in our next generation as before
         for j in range(int(len(population) / 2) - 1):
             # We call the selection functions to get our parents
             parents = selection_func(population, fitness_func)
-            # We put the parents into the crossover function to get two child solutions
-            # for our next generation
+            # We put the parents into the crossover function to get two child solutions
+            # for our next generation
             offspring_a, offspring_b = crossover_func(parents[0], parents[1])
             # We also apply the mutation function for each offspring
             offspring_a = mutation_func(offspring_a)
@@ -241,20 +255,18 @@ def genetic_algorithm(
         # We then replace our current population with the next_generation
         population = next_generation
 
-
     # We finally return the current population in a sorted manner
     population = sorted(
-            population,
-            key=lambda chromosome: fitness_func(chromosome),
-            reverse=True
-        )
+        population, key=lambda chromosome: fitness_func(chromosome), reverse=True
+    )
 
     # Return the population and how many generations we ran for
-    return population, i+1
+    return population, i + 1
+
 
 # We execute the script now by passing all the necessary data
 # We call run evolution and store the last population and the amount of generations it took
-# get there
+# get there
 population, generations = genetic_algorithm(
     # The partial populate_func helps us preset the parameters which are specific to our current problem
     # That's how we can adjust our population function without handing the population size and chromosome length
@@ -263,12 +275,12 @@ population, generations = genetic_algorithm(
     # We hand over the list of things to our fitness function and predefined the weight to be 3KG
     fitness_func=partial(fitness, target_chromosome=target_chromosome),
     target_chromosome=target_chromosome,
-    generation_limit=100
+    generation_limit=5,
 )
 
 
 print(f"Number of generations: {generations}")
 print(f"Best solution: {population[0]}")
 
-# Replace selection_pair function with roulette selection method
+# Replace selection_pair function with roulette selection method
 # Looking into cumulative fitness
