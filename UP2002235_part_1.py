@@ -41,8 +41,6 @@ def generate_chromosome(length: int) -> Chromosome:
     :return: A Chromosome containing 0s and 1s will be returned in a list
     :rtype: Chromosome
     """
-    print("Initial Population: ", choices([0, 1], k=length))
-    print("\n")
     return choices([0, 1], k=length)
 
 
@@ -58,7 +56,11 @@ def generate_population(size: int, chromosome_length: int) -> Population:
     :return: 2D List containing chromosomes
     :rtype: Population
     """
-    return [generate_chromosome(chromosome_length) for _ in range(size)]
+    print("\n")
+    generated_population = [generate_chromosome(chromosome_length) for _ in range(size)]
+    print("Initial Population: ", generated_population)
+    print("\n")
+    return generated_population
 
 
 def fitness(chromosome: Chromosome, target_chromosome: Chromosome) -> int:
@@ -159,6 +161,7 @@ def single_point_crossover(
     # and put them together and return this as our first new solution
     # For the second solution we take first half of chromosome b and second half
     # of chromosome a and put them together
+    print("\n")
     print("single_point_crossover: ", a[0:p] + b[p:], b[0:p] + a[p:])
     print("\n")
     return a[:p] + b[p:], b[:p] + a[p:]
@@ -193,8 +196,7 @@ def mutation(
             else abs(chromosome[index] - 1)
         )
 
-    print("Mutation: ", chromosome)
-    print("\n")
+    print("Mutated chromosome: ", chromosome)
     return chromosome
 
 
@@ -242,11 +244,11 @@ def genetic_algorithm(
             population, key=lambda chromosome: fitness_func(chromosome), reverse=True
         )
 
+        print("\n")
         print("Sorted population: ", population)
         print("\n")
         print(f"Generation {i + 1}: ")
         print("\n")
-        print(f"Generation {population}:\n\n")
 
         # Check if the best solution matches the target chromosome
         if population[0] == target_chromosome:
@@ -267,6 +269,7 @@ def genetic_algorithm(
             # We also apply the mutation function for each offspring
             offspring_a = mutation_func(offspring_a)
             offspring_b = mutation_func(offspring_b)
+            print("\n")
             next_generation += [offspring_a, offspring_b]
 
         # We then replace our current population with the next_generation
@@ -292,13 +295,16 @@ population, generations = genetic_algorithm(
     # We hand over the list of things to our fitness function and predefined the weight to be 3KG
     fitness_func=partial(fitness, target_chromosome=target_chromosome),
     target_chromosome=target_chromosome,
-    generation_limit=5,
+    generation_limit=100,
 )
 
 
-print(f"Number of generations: {generations}")
+print("\n")
+print(f"Number of generations GA ran for: {generations}")
 print(f"Best solution: {population[0]}")
+print("\n")
 
-# Replace selection_pair function with roulette selection method
-# Look into cumulative fitness
-# Don't need a crossover rate
+# Replace selection_pair function with roulette selection method: Done
+# Print the initial population: Not done
+# Look into cumulative fitness: Don't need to do it I think
+# Don't need a crossover rate: Don't need it
