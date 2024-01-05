@@ -119,7 +119,7 @@ def selection_pair(population: Population, fitness_func: FitnessFunc) -> Populat
     
     # Normalize the fitness scores for each individual
     fitnesses = [fitness_func(chromosome) / total_fitness for chromosome in population]
-    
+    print(fitnesses)
     # Select two individuals using the normalized fitness scores as weights
     parent1 = choices(population, weights=fitnesses, k=1)[0]
     parent2 = choices(population, weights=fitnesses, k=1)[0]
@@ -295,16 +295,18 @@ population, generations = genetic_algorithm(
     # We hand over the list of things to our fitness function and predefined the weight to be 3KG
     fitness_func=partial(fitness, target_chromosome=target_chromosome),
     target_chromosome=target_chromosome,
-    generation_limit=100,
+    generation_limit=5,
 )
 
 
 print("\n")
 print(f"Number of generations GA ran for: {generations}")
+print("\n")
+print("Final population:")
+[print(inner_list) for inner_list in population]
+print("\n")
 print(f"Best solution: {population[0]}")
 print("\n")
 
-# Replace selection_pair function with roulette selection method: Done
-# Print the initial population: Not done
 # Look into cumulative fitness: Don't need to do it I think
 # Don't need a crossover rate: Don't need it
