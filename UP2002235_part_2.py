@@ -3,7 +3,9 @@ import numpy as np
 
 # Perceptron class definition
 class Perceptron:
-    """_summary_
+    """
+    The Perceptron class encapsulates the essential components of a perceptron, including
+    its weights, bias, prediction mechanism, and training procedure.
     """
     def __init__(self, input_size):
         """_summary_
@@ -16,11 +18,11 @@ class Perceptron:
         # Set a bias term
         self.bias = np.random.rand()
 
-    # Predict method that takes input values, calculates the weighted sum (dot product of inputs and weights)
-    # plus the bias, and then applies a step function as the activation function. The step function outputs 11 if the
-    # weighted sum is greater than or equal to 0, and 0 otherwise
     def predict(self, inputs):
-        """_summary_
+        """
+        Predict method that takes input values, calculates the weighted sum (dot product of inputs and weights)
+        plus the bias, and then applies a step function as the activation function.
+        The step function outputs 11 if the weighted sum is greater than or equal to 0, and 0 otherwise.
 
         :param inputs: _description_
         :type inputs: _type_
@@ -32,10 +34,10 @@ class Perceptron:
         # Apply step function (threshold activation function)
         return 1 if weighted_sum >= 0 else 0
 
-    # Train method for training the perceptron. It iterates through the training data for a specified number of epoch,
-    # makes predictions, and updates the weights and bias based on the error
     def train(self, training_inputs, labels, learning_rate=0.1, epochs=100):
-        """_summary_
+        """
+        Train method for training the perceptron. It iterates through the training data for a specified number of epoch,
+        makes predictions, and updates the weights and bias based on the error.
 
         :param training_inputs: _description_
         :type training_inputs: _type_
