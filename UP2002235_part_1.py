@@ -75,9 +75,6 @@ def fitness(chromosome: Chromosome, target_chromosome: Chromosome) -> int:
     :rtype: int
     """
     # Calculate fitness based on the number of matching bits with the target chromosome
-    print(
-        f"Chromosome: {chromosome}, Fitness: {sum(g == t for g, t in zip(chromosome, target_chromosome))}"
-    )
     return sum(g == t for g, t in zip(chromosome, target_chromosome))
 
 
@@ -117,10 +114,14 @@ def selection_pair(population: Population, fitness_func: FitnessFunc) -> Populat
     # Calculate the total fitness of the population
     total_fitness = sum(fitness_func(chromosome) for chromosome in population)
     
-    # Normalize the fitness scores for each individual
+    # Normalise the fitness scores for each individual
     fitnesses = [fitness_func(chromosome) / total_fitness for chromosome in population]
-    print(fitnesses)
-    # Select two individuals using the normalized fitness scores as weights
+    
+    print("Normalised fitness:")
+    for chromosome, fitness in zip(population, fitnesses):
+        print(f"Chromosome: {chromosome}, Normalised fitness: {fitness}")
+
+    # Select two individuals using the normalised fitness scores as weights
     parent1 = choices(population, weights=fitnesses, k=1)[0]
     parent2 = choices(population, weights=fitnesses, k=1)[0]
     
@@ -162,7 +163,7 @@ def single_point_crossover(
     # For the second solution we take first half of chromosome b and second half
     # of chromosome a and put them together
     print("\n")
-    print("single_point_crossover: ", a[0:p] + b[p:], b[0:p] + a[p:])
+    print("Single point crossover: ", a[0:p] + b[p:], b[0:p] + a[p:])
     print("\n")
     return a[:p] + b[p:], b[:p] + a[p:]
 
@@ -196,7 +197,7 @@ def mutation(
             else abs(chromosome[index] - 1)
         )
 
-    print("Mutated chromosome: ", chromosome)
+    print("Mutated chromosome/ offsprings: ", chromosome)
     return chromosome
 
 
@@ -240,12 +241,13 @@ def genetic_algorithm(
 
     # The loops runs till if we reached the fitness limit/ looped for generation limit
     for i in range(generation_limit):
+        print("Sorted population and their corresponding fitness:")
         population = sorted(
             population, key=lambda chromosome: fitness_func(chromosome), reverse=True
         )
 
-        print("\n")
-        print("Sorted population: ", population)
+        for chromosome in population:
+            print(f"Chromosome: {chromosome}, Fitness: {fitness_func(chromosome)}")
         print("\n")
         print(f"Generation {i + 1}: ")
         print("\n")
