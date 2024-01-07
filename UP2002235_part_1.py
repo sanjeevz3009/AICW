@@ -297,7 +297,7 @@ population, generations = genetic_algorithm(
     # We hand over the list of things to our fitness function and predefined the weight to be 3KG
     fitness_func=partial(fitness, target_chromosome=target_chromosome),
     target_chromosome=target_chromosome,
-    generation_limit=5,
+    generation_limit=100,
 )
 
 
