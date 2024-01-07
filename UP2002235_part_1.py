@@ -128,7 +128,7 @@ def selection_pair(population: Population, fitness_func: FitnessFunc) -> Populat
 
 
 def single_point_crossover(
-    a: Chromosome, b: Chromosome
+    a: Chromosome, b: Chromosome, crossover_probability: float = 0.5
 ) -> Tuple[Chromosome, Chromosome]:
     """
     The single point crossover function takes two chromosomes as parameters and returns two chromosomes as output
@@ -138,19 +138,25 @@ def single_point_crossover(
     :type a: Chromosome
     :param b: Chromosome b
     :type b: Chromosome
+    :param crossover_probability: Probability of crossover, defaults to 0.5
+    :type crossover_probability: float, optional
     :raises ValueError: Raises an errors if chromosome a and b aren't the same length
     :return: Return two new Chromosomes as output
     :rtype: Tuple[Chromosome, Chromosome]
     """
-    # Making sure out chromosome are the same length, as otherwise crossover would fail
+    # Making sure our chromosomes are the same length, as otherwise crossover would fail
     if len(a) != len(b):
-        raise ValueError("Chromosome a and be must be of the same length")
+        raise ValueError("Chromosome a and b must be of the same length")
 
     length = len(a)
 
     # The length of the chromosome has to be at least two as if it's not there wouldn't
     # be a point to cut them in half/ it's not possible
     if length < 2:
+        return a, b
+
+    # Check if crossover should occur based on the crossover probability
+    if random() > crossover_probability:
         return a, b
 
     # We randomly choose an index to cut it in half
