@@ -314,4 +314,3 @@ print(f"Best solution: {population[0]}")
 print("\n")
 
 # Look into cumulative fitness: Don't need to do it I think as the choices function from random automatically does ir
-# Don't need a crossover rate: Don't need it, can include it
