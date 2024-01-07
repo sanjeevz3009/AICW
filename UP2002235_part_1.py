@@ -3,17 +3,14 @@
 # I will be using partial functions in this code to create specialised callbacks
 # for cleaner interface for the rest of the code and to help reduce code duplication
 from functools import partial
-
-# Importing typing module for type hinting purposes
-from typing import List, Callable, Tuple
-
 # Importing choices so we can randomly select values from a specified list
 # and set the probability of something being selected
 # Importing randint to select a random value
 # Importing randrange to randomly select values within the valued range of indices
 # Importing random to select floating numbers between 0 and 1
-from random import choices, randint, randrange, random
-
+from random import choices, randint, random, randrange
+# Importing typing module for type hinting purposes
+from typing import Callable, List, Tuple
 
 # We don't need this as we aren't doing anything with this
 # initial_chromosome = [1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0]
@@ -113,10 +110,10 @@ def selection_pair(population: Population, fitness_func: FitnessFunc) -> Populat
 
     # Calculate the total fitness of the population
     total_fitness = sum(fitness_func(chromosome) for chromosome in population)
-    
+
     # Normalise the fitness scores for each individual
     fitnesses = [fitness_func(chromosome) / total_fitness for chromosome in population]
-    
+
     print("Normalised fitness:")
     for chromosome, fitness in zip(population, fitnesses):
         print(f"Chromosome: {chromosome}, Normalised fitness: {fitness}")
@@ -124,9 +121,9 @@ def selection_pair(population: Population, fitness_func: FitnessFunc) -> Populat
     # Select two individuals using the normalised fitness scores as weights
     parent1 = choices(population, weights=fitnesses, k=1)[0]
     parent2 = choices(population, weights=fitnesses, k=1)[0]
-    
+
     parents = [parent1, parent2]
-    
+
     return parents
 
 
@@ -293,7 +290,7 @@ population, generations = genetic_algorithm(
     # The partial populate_func helps us preset the parameters which are specific to our current problem
     # That's how we can adjust our population function without handing the population size and chromosome length
     # to the genetic_algorithm function and without the need to write a completely new populate function
-    populate_func=partial(generate_population, size=10, chromosome_length=32),
+    populate_func=partial(generate_population, size=20, chromosome_length=32),
     # We hand over the list of things to our fitness function and predefined the weight to be 3KG
     fitness_func=partial(fitness, target_chromosome=target_chromosome),
     target_chromosome=target_chromosome,
@@ -310,5 +307,5 @@ print("\n")
 print(f"Best solution: {population[0]}")
 print("\n")
 
-# Look into cumulative fitness: Don't need to do it I think
-# Don't need a crossover rate: Don't need it
+# Look into cumulative fitness: Don't need to do it I think as the choices function from random automatically does ir
+# Don't need a crossover rate: Don't need it, can include it
