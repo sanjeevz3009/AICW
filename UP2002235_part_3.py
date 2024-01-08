@@ -1,17 +1,18 @@
 import numpy as np
 
+
 class SingleLayerNN(object):
-    """_summary_
-    """
+    """_summary_"""
+
     def __init__(self):
         """
         Initialiases the neural network with the weights and biases.
         """
-        # self.weight_input_hidden and self.weight_hidden_output are weight
-        # matrices connecting the input to the hidden layer and the hidden layer
-        # to the output layer
+        # self.weight_input_hidden and self.weight_hidden_output are weight
+        # matrices connecting the input to the hidden layer and the hidden layer
+        # to the output layer
         self.weight_input_hidden = np.random.rand(2, 2)
-        # self.bias_hidden and self.bias_output are bias vectors for the hidden and
+        # self.bias_hidden and self.bias_output are bias vectors for the hidden and
         # output layers
         self.bias_hidden = np.zeros((1, 2))
         self.weight_hidden_output = np.random.rand(2, 1)
@@ -27,7 +28,7 @@ class SingleLayerNN(object):
         :rtype: _type_
         """
         return 1.0 / (1 + np.exp(-x))
-    
+
     def sigmoid_derivative(self, x):
         """
         Calculates the sigmoid derivative
@@ -38,7 +39,7 @@ class SingleLayerNN(object):
         :rtype: _type_
         """
         return x * (1.0 - x)
-    
+
     def feed_forward(self, x):
         """
         feed_forward method performs the forward pass through the network.
@@ -53,10 +54,12 @@ class SingleLayerNN(object):
         :return: _description_
         :rtype: _type_
         """
-        # Forward pass through the network
+        # Forward pass through the network
         self.hidden_input = np.dot(x, self.weight_input_hidden) + self.bias_hidden
         self.hidden_output = self.sigmoid(self.hidden_input)
-        self.output_input = np.dot(self.hidden_output, self.weight_hidden_output) + self.bias_output
+        self.output_input = (
+            np.dot(self.hidden_output, self.weight_hidden_output) + self.bias_output
+        )
         self.output = self.sigmoid(self.output_input)
         return self.output
 
@@ -75,21 +78,25 @@ class SingleLayerNN(object):
         :param learning_rate: _description_
         :type learning_rate: _type_
         """
-        # Back propagate to update the weights using back propagation
+        # Back propagate to update the weights using back propagation
         output_error = target - self.output
         sigmoid_derivative_output = self.sigmoid_derivative(self.output)
         sigmoid_derivative_hidden = self.sigmoid_derivative(self.hidden_output)
 
         output_delta = output_error * sigmoid_derivative_output
-        hidden_delta = np.dot(output_delta, self.weight_hidden_output.T) * sigmoid_derivative_hidden
+        hidden_delta = (
+            np.dot(output_delta, self.weight_hidden_output.T)
+            * sigmoid_derivative_hidden
+        )
 
-        self.weight_hidden_output += learning_rate * np.outer(self.hidden_output, output_delta)
+        self.weight_hidden_output += learning_rate * np.outer(
+            self.hidden_output, output_delta
+        )
         self.bias_output += learning_rate * np.sum(output_delta, axis=0, keepdims=True)
 
         self.weight_input_hidden += learning_rate * np.outer(input_data, hidden_delta)
         self.bias_hidden += learning_rate * np.sum(hidden_delta, axis=0, keepdims=True)
 
-    
     def train_network(self, input_data, target_data, epochs, learning_rate):
         """
         train_network method trains the neural network using the provided training data
@@ -113,33 +120,38 @@ class SingleLayerNN(object):
                 output = self.feed_forward(input)
                 self.back_propagate(input, target_output, learning_rate)
                 total_error += np.mean((target_output - output) ** 2)
-            print(f"Epoch {epoch + 1}/{epochs}, Mean Squared Error: {total_error / len(input_data)}")
-                
+            print(
+                f"Epoch {epoch + 1}/{epochs}, Mean Squared Error: {total_error / len(input_data)}"
+            )
+
+
 if __name__ == "__main__":
-    # XOR problem training data
+    # XOR problem training data
     input_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-    # Target outputs for the XOR problem
+    # Target outputs for the XOR problem
     target_data = np.array([[0], [1], [1], [0]])
 
     # OR problem training data
     input_data_or = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-    # Target outputs for the OR problem
+    # Target outputs for the OR problem
     target_data_or = np.array([0, 1, 1, 1])
 
     # Create an instance of the SingleLayerNN class, named xor_nn to train the XOR dataset
     xor_nn = SingleLayerNN()
-    # The train_network method is called to train the neural network using the XOR training data
+    # The train_network method is called to train the neural network using the XOR training data
     xor_nn.train_network(input_data, target_data, epochs=10000, learning_rate=0.1)
 
     # Create an instance of the SingleLayerNN class, named or_nn to train the OR dataset
     or_nn = SingleLayerNN()
-     # The train_network method is called to train the neural network using the OR training data
+    # The train_network method is called to train the neural network using the OR training data
     or_nn.train_network(input_data_or, target_data_or, epochs=10000, learning_rate=0.1)
 
     print("================ Testing the Trained Network for XOR ================")
     for input_data, target_output in zip(input_data, target_data):
         predicted_output = xor_nn.feed_forward(input_data)
-        print(f"Input: {input_data}, Target Output: {target_output}, Predicted Output: {predicted_output}")
+        print(
+            f"Input: {input_data}, Target Output: {target_output}, Predicted Output: {predicted_output}"
+        )
     print("=====================================================================")
 
     print("\n")
@@ -147,5 +159,7 @@ if __name__ == "__main__":
     print("================ Testing the Trained Network for OR ================")
     for input_data, target_output in zip(input_data_or, target_data_or):
         predicted_output = xor_nn.feed_forward(input_data)
-        print(f"Input: {input_data}, Target Output: {target_output}, Predicted Output: {predicted_output}")
+        print(
+            f"Input: {input_data}, Target Output: {target_output}, Predicted Output: {predicted_output}"
+        )
     print("=====================================================================")
