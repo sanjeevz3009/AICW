@@ -163,3 +163,16 @@ if __name__ == "__main__":
             f"Input: {input_data}, Target Output: {target_output}, Predicted Output: {predicted_output}"
         )
     print("=====================================================================")
+
+
+# The XOR problem is a classic problem where the output is 1 only if exactly one of the inputs is 1. Otherwise, the output is 0.
+# The architecture of the neural network is fixed with 2 input neurons, 2 hidden neurons, and 1 output neuron.
+
+# During training, the network learns to map the XOR inputs to the correct outputs.
+# The weights and biases are adjusted using the back propagation algorithm to minimise the mean squared error between the predicted and target outputs.
+
+# After training, the network is tested with the same XOR inputs to see how well it generalises to new data.
+# The predicted outputs are compared to the target outputs to evaluate the network's performance.
+
+# This code demonstrates the training of a neural network to solve the XOR problem using back propagation.
+# The key to its success lies in the presence of a hidden layer, allowing the network to learn and represent non-linear relationships.
