@@ -160,31 +160,37 @@ class SingleLayerNN(object):
 
         # Plot the Mean Squared Error
         # The Mean Squared Error is plotted to visualise the training progress.
-        # plt.plot(range(1, epochs + 1), mse_values)
-        # plt.xlabel('Epoch')
-        # plt.ylabel('Mean Squared Error')
-        # plt.title('Training Progress')
-        # plt.show()
+        plt.plot(range(1, epochs + 1), mse_values)
+        plt.xlabel('Epoch')
+        plt.ylabel('Mean Squared Error')
+        plt.title('Training Progress')
+        plt.show()
 
 
 if __name__ == "__main__":
     # XOR problem training data
-    # Defines XOR problem training data (input_data) and corresponding
+    # Defines AND problem training data (input_data) and corresponding
     # outputs (target_data)
-    input_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
-    # Target outputs for the XOR problem
-    target_data = np.array([[0], [1], [1], [0]])
+    # input_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+    # Target outputs for the AND problem
+    # target_data = np.array([[0], [0], [0], [1]])
+
+    training_inputs = np.random.rand(100,2)
+    targets = np.random.rand(100,1)
+
+    input_data = np.random.rand(1, 2)     #after training this tests the train network 
+    target_data = np.random.rand(1, 1) 
 
     # Create an instance of the SingleLayerNN class
     single_layer_nn = SingleLayerNN()
 
-    # Trains the neural network on the XOR problem and prints the input, target_output and
+    # Trains the neural network on the AND problem and prints the input, target_output and
     # predicted output
-    single_layer_nn.train_network(input_data, target_data, epochs=10000, learning_rate=0.1)
+    single_layer_nn.train_network(training_inputs, targets, epochs=10, learning_rate=0.1)
 
     # Test the trained network
     print("================ Testing the Trained Network ================")
-    for input_data, target_output in zip(input_data, target_data):
-        predicted_output = single_layer_nn.feed_forward(input_data)
-        print(f"Input: {input_data}, Target Output: {target_output}, Predicted Output: {predicted_output}")
+    for input, target_output in zip(input_data, target_data):
+        predicted_output = single_layer_nn.feed_forward(input)
+        print(f"Input: {input}, Target Output: {target_output}, Predicted Output: {predicted_output}")
     print("================================================================")
