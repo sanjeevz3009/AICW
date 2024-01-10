@@ -36,7 +36,6 @@ class MultiLayerNN(object):
         applying the sigmoid function to its input
         :rtype: NDArray
         """
-        print(type( 1.0 / (1 + np.exp(-x))))
         return 1.0 / (1 + np.exp(-x))
 
     def sigmoid_derivative(self, x: npt.NDArray):
@@ -52,7 +51,7 @@ class MultiLayerNN(object):
         """
         return x * (1.0 - x)
 
-    def feed_forward(self, x):
+    def feed_forward(self, x: npt.NDArray):
         """
         feed_forward method performs the forward pass through the network.
         It calculates the inputs to the hidden layer (self.hidden_input) and the
@@ -63,10 +62,10 @@ class MultiLayerNN(object):
 
         :param x: This is the input data to the neural network. It represents the features or
         values that you want the neural network to process
-        :type x: _type_
+        :type x: npt.NDArray
         :return: The function returns the output of the neural network, which represents the 
         predicted result after the forward pass
-        :rtype: _type_
+        :rtype: npt.NDArray
         """
         # Forward pass through the network
         # Hidden Layer Input Calculation
@@ -88,7 +87,7 @@ class MultiLayerNN(object):
         self.output = self.sigmoid(self.output_input)
         return self.output
 
-    def back_propagate(self, input_data, target, learning_rate):
+    def back_propagate(self, input_data: npt.NDArray, target: npt.NDArray, learning_rate: float):
         """
         back_propagate method updates the weights and biases using back propagation.
         It calculates the error at the output layer (output_error) and the corresponding
@@ -97,11 +96,11 @@ class MultiLayerNN(object):
         Weights and biases are updated based on the calculated gradients and the learning rate.
 
         :param input_data: The input data that was fed into the network during the forward pass
-        :type input_data: _type_
+        :type input_data: npt.NDArray
         :param target: The target or true output corresponding to the input data
-        :type target: _type_
+        :type target: npt.NDArray
         :param learning_rate: The learning rate hyperparameter, controlling the size of weight updates
-        :type learning_rate: _type_
+        :type learning_rate: float
         """
         # Back propagate to update the weights using back propagation
         # Output Layer Error Calculation
@@ -134,7 +133,7 @@ class MultiLayerNN(object):
         self.weight_input_hidden += learning_rate * np.outer(input_data, hidden_delta)
         self.bias_hidden += learning_rate * np.sum(hidden_delta, axis=0, keepdims=True)
 
-    def train_network(self, input_data, target_data, epochs, learning_rate):
+    def train_network(self, input_data: npt.NDArray, target_data: npt.NDArray, epochs: int, learning_rate: float):
         """
         train_network method trains the neural network using the provided training data
         (input_data and target_data) for specified number of epochs.
@@ -143,13 +142,13 @@ class MultiLayerNN(object):
         The mean squared error (MSE) is calculated for each epoch and printed too.
 
         :param input_data: The input data used for training
-        :type input_data: _type_
+        :type input_data: npt.NDArray
         :param target_data: The target or true output corresponding to the input data
-        :type target_data: _type_
+        :type target_data: npt.NDArray
         :param epochs: The number of times to iterate through the entire training dataset
-        :type epochs: _type_
+        :type epochs: int
         :param learning_rate: The learning rate hyperparameter, controlling the size of weight updates
-        :type learning_rate: _type_
+        :type learning_rate: float
         """
         # Training Loop
         # Iterates over the specified number of epochs
