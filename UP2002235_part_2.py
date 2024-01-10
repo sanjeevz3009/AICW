@@ -1,7 +1,6 @@
-# Importing numpy to be used for numerical operations. i.e Arrays and Matrices
 # Importing typing module for type hinting purposes
 from typing import List
-
+# Importing numpy to be used for numerical operations. i.e Arrays and Matrices
 import numpy as np
 # Importing numpy typing for type hinting purposes
 import numpy.typing as npt
