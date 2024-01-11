@@ -117,9 +117,9 @@ class MultiLayerNN(object):
         # Based on the back propagation equations
         # dE/DWi =(y - y[i+1]) S'(x[i+1])xi
         # S' (x[i+1])=S(x[i+1])(1-s(x[i+1)))
-        # s(x[i+1]=x[i+1]            
+        # s(x[i+1]=x[i+1]
         # x[i+1]=yiWi
-        
+
         # Back propagate to update the weights using back propagation
         # Output Layer Error Calculation
         # Calculates the error at the output layer by taking the difference between the target output and the actual output
