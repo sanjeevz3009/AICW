@@ -6,7 +6,7 @@ import numpy.typing as npt
 
 class MultiLayerNN(object):
     """
-    Represents a multo-layer neural network with 2 hidden layers.
+    Represents a multi-layer neural network with 2 hidden layers.
     It is initialised with random weights and biases for the connections
     between layers.
     """
