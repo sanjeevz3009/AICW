@@ -31,7 +31,8 @@ MutationFunc = Callable[[Chromosome], Chromosome]
 def generate_chromosome(length: int) -> Chromosome:
     """
     Generate a chromosome where in this case it's just 1s and 0s. 1 being fit and 0 being not
-    so. The function below will help us generate a random list of 1s and 0s for the length specified.
+    so.
+    The function below will help us generate a random list of 1s and 0s for the length specified.
 
     :param length: Length of the chromosome
     :type length: int
@@ -43,8 +44,9 @@ def generate_chromosome(length: int) -> Chromosome:
 
 def generate_population(size: int, chromosome_length: int) -> Population:
     """
-    Create a population which essentially is a lists of chromosome. We will call the generate_chromosome function
-    however many times from the size specified until our population has the desired size.
+    Create a population which essentially is a lists of chromosome.
+    We will call the generate_chromosome function however many times from the size
+    specified until our population has the desired size.
 
     :param size: Size of the population
     :type size: int
@@ -297,7 +299,7 @@ population, generations = genetic_algorithm(
     # That's how we can adjust our population function without handing the population size and chromosome length
     # to the genetic_algorithm function and without the need to write a completely new populate function
     populate_func=partial(generate_population, size=20, chromosome_length=32),
-    # We hand over the list of things to our fitness function and predefined the weight to be 3KG
+    # We hand over the target chromosome to the fitness function as a partial function
     fitness_func=partial(fitness, target_chromosome=target_chromosome),
     target_chromosome=target_chromosome,
     generation_limit=100,
