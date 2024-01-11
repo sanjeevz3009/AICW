@@ -1,7 +1,14 @@
+# Importing numpy to be used for numerical operations. i.e Arrays and Matrices
 import numpy as np
+# Importing numpy typing for type hinting purposes
+import numpy.typing as npt
 
 class MultiLayerNN(object):
-    """_summary_"""
+    """
+    Represents a multo-layer neural network with 2 hidden layers.
+    It is initialised with random weights and biases for the connections
+    between layers.
+    """
 
     def __init__(self):
         """
@@ -20,21 +27,37 @@ class MultiLayerNN(object):
         self.bias_hidden2 = np.zeros((1, 2))
         self.bias_output = np.zeros((1, 1))
 
-    def relu(self, x):
+    def relu(self, x: npt.NDArray) -> npt.NDArray:
         """
-        Rectified Linear Unit (ReLU) activation function
+        Rectified Linear Unit (ReLU) activation function.
+
+        :param x: _description_
+        :type x: npt.NDArray
+        :return: _description_
+        :rtype: npt.NDArray
         """
+        print("FCUK", type(np.maximum(0, x)))
         return np.maximum(0, x)
 
-    def relu_derivative(self, x):
+    def relu_derivative(self, x: npt.NDArray) -> npt.NDArray:
         """
-        Calculates the derivative of the ReLU activation function
+        Calculates the derivative of the ReLU activation function.
+
+        :param x: _description_
+        :type x: npt.NDArray
+        :return: _description_
+        :rtype: npt.NDArray
         """
         return np.where(x > 0, 1, 0)
 
-    def feed_forward(self, x):
+    def feed_forward(self, x: npt.NDArray) -> npt.NDArray:
         """
         feed_forward method performs the forward pass through the network.
+
+        :param x: _description_
+        :type x: npt.NDArray
+        :return: _description_
+        :rtype: npt.NDArray
         """
         # Forward pass through the network with ReLU activation for hidden layers
         self.hidden1_input = np.dot(x, self.weight_input_hidden1) + self.bias_hidden1
@@ -51,7 +74,20 @@ class MultiLayerNN(object):
     def back_propagate(self, input_data, target, learning_rate):
         """
         back_propagate method updates the weights and biases using back propagation.
+
+        :param input_data: _description_
+        :type input_data: _type_
+        :param target: _description_
+        :type target: _type_
+        :param learning_rate: _description_
+        :type learning_rate: _type_
         """
+        # Based on the back propagation equations
+        # dE/DWi =(y - y[i+1]) S'(x[i+1])xi
+        # S' (x[i+1])=S(x[i+1])(1-s(x[i+1)))
+        # s(x[i+1]=x[i+1]            
+        # x[i+1]=yiWi
+
         # Back propagate to update the weights using back propagation
         output_error = target - self.output
         relu_derivative_output = self.relu_derivative(self.output)
@@ -79,6 +115,15 @@ class MultiLayerNN(object):
         """
         train_network method trains the neural network using the provided training data
         for specified number of epochs.
+
+        :param input_data: _description_
+        :type input_data: _type_
+        :param target_data: _description_
+        :type target_data: _type_
+        :param epochs: _description_
+        :type epochs: _type_
+        :param learning_rate: _description_
+        :type learning_rate: _type_
         """
         for epoch in range(epochs):
             total_error = 0

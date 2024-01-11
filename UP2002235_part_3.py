@@ -24,7 +24,7 @@ class MultiLayerNN(object):
         self.weight_hidden_output = np.random.rand(2, 1)
         self.bias_output = np.zeros((1, 1))
 
-    def sigmoid(self, x: npt.NDArray):
+    def sigmoid(self, x: npt.NDArray) -> npt.NDArray:
         """
         Sigmoid activation function.
         Used in the network's forward and backward passes.
@@ -42,7 +42,7 @@ class MultiLayerNN(object):
         # Divides 1 by the sum calculated
         return 1.0 / (1 + np.exp(-x))
 
-    def sigmoid_derivative(self, x: npt.NDArray):
+    def sigmoid_derivative(self, x: npt.NDArray) -> npt.NDArray:
         """
         Calculates the sigmoid derivative.
         Used in the network's forward and backward passes.
@@ -56,7 +56,7 @@ class MultiLayerNN(object):
         # x * (1.0 - x): Calculates the derivative of the sigmoid function for the given input
         return x * (1.0 - x)
 
-    def feed_forward(self, x: npt.NDArray):
+    def feed_forward(self, x: npt.NDArray) -> npt.NDArray:
         """
         feed_forward method performs the forward pass through the network.
         It calculates the inputs to the hidden layer (self.hidden_input) and the
@@ -114,6 +114,12 @@ class MultiLayerNN(object):
         :param learning_rate: The learning rate hyperparameter, controlling the size of weight updates
         :type learning_rate: float
         """
+        # Based on the back propagation equations
+        # dE/DWi =(y - y[i+1]) S'(x[i+1])xi
+        # S' (x[i+1])=S(x[i+1])(1-s(x[i+1)))
+        # s(x[i+1]=x[i+1]            
+        # x[i+1]=yiWi
+        
         # Back propagate to update the weights using back propagation
         # Output Layer Error Calculation
         # Calculates the error at the output layer by taking the difference between the target output and the actual output
