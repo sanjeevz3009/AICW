@@ -1,137 +1,205 @@
 import pickle
+
 import numpy as np
-import urllib.request
-import tarfile
 
-# Function to load CIFAR-10 dataset
+
+# Load CIFAR-10 dataset
 def load_cifar10():
-    # url = "https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz"
-    # filename = "cifar-10-python.tar.gz"
-    # urllib.request.urlretrieve(url, filename)
+    """
+    Reads the CIFAR-10 dataset from a file named 'data_batch_1' using the pickle module.
+    It returns the raw pixel data and corresponding labels.
+    """
+    with open("cifar-10-batches-py/data_batch_1", "rb") as file:
+        batch = pickle.load(file, encoding="latin1")
+    return batch["data"], batch["labels"]
 
-    # with tarfile.open(filename, "r:gz") as tar:
-    #     tar.extractall()
-    
-    # Load training data
-    with open("cifar-10-batches-py/data_batch_1", 'rb') as fo:
-        data = pickle.load(fo, encoding='bytes')
-    
-    X_train = data[b'data'].reshape((10000, 3, 32, 32)).transpose(0, 2, 3, 1)
-    y_train = np.array(data[b'labels'])
 
-    # Load testing data
-    with open("cifar-10-batches-py/test_batch", 'rb') as fo:
-        data = pickle.load(fo, encoding='bytes')
-    
-    X_test = data[b'data'].reshape((10000, 3, 32, 32)).transpose(0, 2, 3, 1)
-    y_test = np.array(data[b'labels'])
-    
-    return (X_train, y_train), (X_test, y_test)
+# Normalise the data
+def normalise_data(data):
+    """
+    Scales the pixel values in the dataset to the range [0, 1] by dividing them by 255.
+    """
+    return data / 255.0
 
-# Function to preprocess the data (normalize and flatten)
-def preprocess_data(X):
-    X = X.astype('float32') / 255.0
-    return X.reshape(X.shape[0], -1)
 
-# One-hot encode the labels
-def one_hot_encode(y, num_classes):
-    encoded = np.zeros((len(y), num_classes))
-    for i in range(len(y)):
-        encoded[i, y[i]] = 1
+# One-hot encode labels
+def one_hot_encode(labels):
+    """
+    Converts the class labels into one-hot encoded vector.
+    """
+    num_classes = len(np.unique(labels))
+    encoded = np.zeros((len(labels), num_classes))
+    for i, label in enumerate(labels):
+        encoded[i, label] = 1
     return encoded
+
 
 # Sigmoid activation function
 def sigmoid(x):
-    return 1.0 / (1.0 + np.exp(-x))
+    """
+    Implements the sigmoid activation function, which squashes the input values between 0 and 1.
+    """
+    return 1 / (1 + np.exp(-x))
 
-# Softmax activation function
-def softmax(x):
-    exp_x = np.exp(x - np.max(x, axis=1, keepdims=True))
-    return exp_x / np.sum(exp_x, axis=1, keepdims=True)
 
-# Cross-entropy loss function
-def cross_entropy_loss(y_true, y_pred):
-    m = y_true.shape[0]
-    return -np.sum(y_true * np.log(y_pred + 1e-10)) / m
+# Derivative of sigmoid function
+def sigmoid_derivative(x):
+    """
+    Computes the derivative of the sigmoid function.
+    """
+    return x * (1 - x)
+
 
 # Neural network class
 class NeuralNetwork:
+    """
+    Represent a simple feedforward neural network.
+    It has methods for training (train) and making predictions (predict).
+    """
+
     def __init__(self, input_size, hidden_size, output_size):
-        self.weights1 = np.random.randn(input_size, hidden_size)
-        self.bias1 = np.zeros((1, hidden_size))
-        self.weights2 = np.random.randn(hidden_size, output_size)
-        self.bias2 = np.zeros((1, output_size))
+        """
+        Initialises the weights and biases with random values.
+        """
+        # Initialise weights and biases
+        self.weights_input_hidden = np.random.rand(input_size, hidden_size)
+        self.bias_hidden = np.zeros((1, hidden_size))
+        self.weights_hidden_output = np.random.rand(hidden_size, output_size)
+        self.bias_output = np.zeros((1, output_size))
 
-    def forward(self, X):
-        self.z1 = np.dot(X, self.weights1) + self.bias1
-        self.a1 = sigmoid(self.z1)
-        self.z2 = np.dot(self.a1, self.weights2) + self.bias2
-        self.a2 = softmax(self.z2)
-        return self.a2
+    def train(self, X, y, epochs, learning_rate):
+        """
+        Performs training using back propagation.
+        It takes input data (X), corresponding labels (y), the number of epochs, and the learning rate as parameters.
+        """
+        for epoch in range(epochs):
+            print("Epoch", epoch)
+            # Forward pass
+            hidden_layer_input = np.dot(X, self.weights_input_hidden) + self.bias_hidden
+            hidden_layer_output = sigmoid(hidden_layer_input)
 
-    def backward(self, X, y, learning_rate):
-        m = X.shape[0]
-        dz2 = self.a2 - y
-        dw2 = np.dot(self.a1.T, dz2) / m
-        db2 = np.sum(dz2, axis=0, keepdims=True) / m
-        dz1 = np.dot(dz2, self.weights2.T) * (self.a1 * (1 - self.a1))
-        dw1 = np.dot(X.T, dz1) / m
-        db1 = np.sum(dz1, axis=0, keepdims=True) / m
+            output_layer_input = (
+                np.dot(hidden_layer_output, self.weights_hidden_output)
+                + self.bias_output
+            )
+            predicted_output = sigmoid(output_layer_input)
 
-        # Update weights and biases
-        self.weights1 -= learning_rate * dw1
-        self.bias1 -= learning_rate * db1
-        self.weights2 -= learning_rate * dw2
-        self.bias2 -= learning_rate * db2
+            # Calculate loss
+            loss = y - predicted_output
 
-# Training function
-def train_neural_network(X_train, y_train, num_epochs, learning_rate, input_size, hidden_size, output_size):
-    num_classes = np.max(y_train) + 1
-    y_train_encoded = one_hot_encode(y_train, num_classes)
+            # Backpropagation
+            output_error = loss * sigmoid_derivative(predicted_output)
+            hidden_layer_error = output_error.dot(
+                self.weights_hidden_output.T
+            ) * sigmoid_derivative(hidden_layer_output)
 
-    neural_net = NeuralNetwork(input_size, hidden_size, output_size)
+            # Update weights and biases
+            self.weights_hidden_output += (
+                hidden_layer_output.T.dot(output_error) * learning_rate
+            )
+            self.bias_output += (
+                np.sum(output_error, axis=0, keepdims=True) * learning_rate
+            )
 
-    for epoch in range(num_epochs):
-        # Forward pass
-        y_pred = neural_net.forward(X_train)
+            self.weights_input_hidden += X.T.dot(hidden_layer_error) * learning_rate
+            self.bias_hidden += (
+                np.sum(hidden_layer_error, axis=0, keepdims=True) * learning_rate
+            )
 
-        # Compute loss
-        loss = cross_entropy_loss(y_train_encoded, y_pred)
+    def predict(self, X):
+        """
+        Performs a forward pass to generate predictions for input data.
+        """
+        # Forward pass for prediction
+        hidden_layer_input = np.dot(X, self.weights_input_hidden) + self.bias_hidden
+        hidden_layer_output = sigmoid(hidden_layer_input)
 
-        # Backward pass and update weights
-        neural_net.backward(X_train, y_train_encoded, learning_rate)
+        output_layer_input = (
+            np.dot(hidden_layer_output, self.weights_hidden_output) + self.bias_output
+        )
+        predicted_output = sigmoid(output_layer_input)
 
-        # Print loss for every 100 epochs
-        if epoch % 100 == 0:
-            print(f"Epoch {epoch}, Loss: {loss}")
+        return predicted_output
 
-    return neural_net
 
-# Test the neural network on the test set
-def test_neural_network(neural_net, X_test, y_test):
-    y_pred = neural_net.forward(X_test)
-    predictions = np.argmax(y_pred, axis=1)
-    accuracy = np.mean(predictions == y_test)
-    print(f"Test Accuracy: {accuracy}")
+def load_cifar10_meta():
+    """
+    It returns a list of class names associated with the CIFAR-10 dataset.
+    This list is typically used to map numeric labels to human-readable class names for better interpretation of the results.
+    """
+    with open("cifar-10-batches-py/batches.meta", "rb") as file:
+        meta = pickle.load(file, encoding="latin1")
+    return meta["label_names"]
 
-# Main program
-if __name__ == "__main__":
-    # Load CIFAR-10 dataset
-    (X_train, y_train), (X_test, y_test) = load_cifar10()
 
-    # Preprocess the data
-    X_train = preprocess_data(X_train)
-    X_test = preprocess_data(X_test)
+# Load CIFAR-10 dataset and class names
+data, labels = load_cifar10()
+class_names = load_cifar10_meta()
 
-    # Define neural network parameters
-    input_size = X_train.shape[1]
-    hidden_size = 256
-    output_size = 10
-    num_epochs = 100
+# Normalise and one-hot encode the data
+data = normalise_data(data)
+labels_one_hot = one_hot_encode(labels)
+
+# Map class names to numerical labels
+class_name_to_label = {class_name: i for i, class_name in enumerate(class_names)}
+
+# Choose the class to train on (e.g., "airplane")
+train_class_name = "airplane"
+train_class_label = class_name_to_label[train_class_name]
+
+# Filter data and labels for the chosen class
+train_class_indices = np.where(np.array(labels) == train_class_label)[0]
+train_class_data = data[train_class_indices]
+train_class_labels_one_hot = labels_one_hot[train_class_indices]
+
+# Select the number of images to train on
+num_images_to_train = 100  # Specify the number of images to train on
+
+# Initialize neural network
+input_size = data.shape[1]
+hidden_size = 64
+output_size = len(class_names)
+nn = NeuralNetwork(input_size, hidden_size, output_size)
+
+# Train the neural network on the specified number of images
+for i in range(min(num_images_to_train, len(train_class_indices))):
+    image_to_train = train_class_data[i].reshape(1, -1)
+    label_to_train = train_class_labels_one_hot[i].reshape(1, -1)
+
+    # Train for a small number of epochs for demonstration purposes
+    epochs = 100
     learning_rate = 0.01
+    nn.train(image_to_train, label_to_train, epochs, learning_rate)
 
-    # Train the neural network
-    neural_net = train_neural_network(X_train, y_train, num_epochs, learning_rate, input_size, hidden_size, output_size)
+# Specify the class of images to test
+test_class_name = "airplane"
 
-    # Test the neural network
-    test_neural_network(neural_net, X_test, y_test)
+# Filter data and labels for the chosen test class
+test_class_label = class_name_to_label[test_class_name]
+test_class_indices = np.where(np.array(labels) == test_class_label)[0]
+test_class_data = data[test_class_indices]
+test_class_labels_one_hot = labels_one_hot[test_class_indices]
+
+# Specify the number of images to test
+num_images_to_test = 10  # Specify the number of images to test
+
+# Test the trained neural network on the specified number of images from the test class
+for i in range(min(num_images_to_test, len(test_class_indices))):
+    test_image = test_class_data[i].reshape(1, -1)
+    predicted_output = nn.predict(test_image)
+    predicted_label = np.argmax(predicted_output)
+
+    # Calculate accuracy for each test image
+    accuracy = (predicted_label == test_class_label) * 100.0
+
+    # Print the actual and predicted labels along with class names and accuracy
+    actual_label = np.argmax(test_class_labels_one_hot[i])
+    actual_class_name = class_names[actual_label]
+
+    predicted_class_name = class_names[predicted_label]
+
+    print(f"Testing on class '{test_class_name}', Image {i + 1}:")
+    print("Actual Class Name:", actual_class_name)
+    print("Predicted Class Name:", predicted_class_name)
+    print("Accuracy:", accuracy, "%")
+    print()
