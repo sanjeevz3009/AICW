@@ -181,7 +181,7 @@ test_class_data = data[test_class_indices]
 test_class_labels_one_hot = labels_one_hot[test_class_indices]
 
 # Specify the number of images to test
-num_images_to_test = 10  # Specify the number of images to test
+num_images_to_test = 100  # Specify the number of images to test
 
 # Test the trained neural network on the specified number of images from the test class
 for i in range(min(num_images_to_test, len(test_class_indices))):
