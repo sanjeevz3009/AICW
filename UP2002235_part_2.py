@@ -3,6 +3,7 @@ from typing import List
 
 # Importing numpy to be used for numerical operations. i.e Arrays and Matrices
 import numpy as np
+
 # Importing numpy typing for type hinting purposes
 import numpy.typing as npt
 
@@ -110,7 +111,9 @@ xor_perceptron.train(xor_inputs, xor_labels, problem_name="XOR")
 
 # Test the perceptron for the OR problem
 print("\n")
-print("As you can see from the below predicted output, the perceptron has learned to solve the OR problem, but not the XOR problem.")
+print(
+    "As you can see from the below predicted output, the perceptron has learned to solve the OR problem, but not the XOR problem."
+)
 print("OR Problem:")
 for inputs in or_inputs:
     prediction = or_perceptron.predict(inputs)
@@ -118,7 +121,9 @@ for inputs in or_inputs:
 
 # Test the perceptron for the XOR problem
 print("\n")
-print("As you can see from the below predicted output, the perceptron has learned to solve the OR problem, but not the XOR problem.")
+print(
+    "As you can see from the below predicted output, the perceptron has learned to solve the OR problem, but not the XOR problem."
+)
 print("The XOR predicted output below is not correct.")
 print("XOR Problem:")
 for inputs in xor_inputs:
