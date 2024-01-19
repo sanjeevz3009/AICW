@@ -1,7 +1,16 @@
+
+# Used for serialising and deserialising Python objects in this case
+# for loading the CIFAR-10 dataset
 import pickle
 
+# Importing numpy to be used for numerical operations. i.e Arrays and Matrices
 import numpy as np
 
+# Importing numpy typing for type hinting purposes
+import numpy.typing as npt
+
+# Importing typing module for type hinting purposes
+from typing import List
 
 # Load CIFAR-10 dataset
 def load_cifar10():
@@ -15,17 +24,30 @@ def load_cifar10():
 
 
 # Normalise the data
-def normalise_data(data):
+def normalise_data(data: npt.NDArray) -> npt.NDArray:
     """
     Scales the pixel values in the dataset to the range [0, 1] by dividing them by 255.
+
+    :param data: Represents the raw pixel data of images in the CIFAR-10 dataset
+    :type data: npt.NDArray
+    :return: The normalised pixel values. The function returns a new array where each pixel value has been divided by 255.0,
+    resulting in values scaled to the range [0, 1]. The normalised data is returned by the function
+    :rtype: npt.NDArray
     """
     return data / 255.0
 
 
 # One-hot encode labels
-def one_hot_encode(labels):
+def one_hot_encode(labels: List) -> npt.NDArray:
     """
     Converts the class labels into one-hot encoded vector.
+
+    :param labels: The class labels of the dataset. Each label represents the class of an image
+    :type labels: List
+    :return: The one-hot encoded representation of the class labels. The function returns a 2D NumPy array (encoded),
+    where each row corresponds to a different data point, and each column represents a class. The one-hot encoding is
+    achieved by setting the corresponding class column to 1, and all other columns to 0
+    :rtype: npt.NDArray
     """
     num_classes = len(np.unique(labels))
     encoded = np.zeros((len(labels), num_classes))
@@ -35,18 +57,38 @@ def one_hot_encode(labels):
 
 
 # Sigmoid activation function
-def sigmoid(x):
+def sigmoid(x: npt.NDArray) -> npt.NDArray:
     """
-    Implements the sigmoid activation function, which squashes the input values between 0 and 1.
+    Sigmoid activation function.
+    Used in the network's forward and backward passes.
+
+    :param x: The sigmoid function takes any real-valued number x and
+    squashes it into the range (0, 1). The output is always between 0 and 1
+    :type x: npt.NDArray
+    :return: The result of this computation, which is a
+    value between 0 and 1. The output is the activation of a neuron after
+    applying the sigmoid function to its input
+    :rtype: NDArray
     """
+    # np.exp(-x): Calculates the exponential function of the negative of x
+    # Adds 1 to the result of the exponential function
+    # Divides 1 by the sum calculated
     return 1 / (1 + np.exp(-x))
 
 
 # Derivative of sigmoid function
-def sigmoid_derivative(x):
+def sigmoid_derivative(x: npt.NDArray) -> npt.NDArray:
     """
-    Computes the derivative of the sigmoid function.
+    Calculates the sigmoid derivative.
+    Used in the network's forward and backward passes.
+
+    :param x: This is the input to the sigmoid derivative function
+    :type x: : npt.NDArray
+    :return: The function returns the result of the derivative of the
+    sigmoid function applied element-wise to the input array x
+    :rtype: npt.NDArray
     """
+    # x * (1.0 - x): Calculates the derivative of the sigmoid function for the given input
     return x * (1 - x)
 
 
@@ -57,9 +99,16 @@ class NeuralNetwork:
     It has methods for training (train) and making predictions (predict).
     """
 
-    def __init__(self, input_size, hidden_size, output_size):
+    def __init__(self, input_size: int, hidden_size: int, output_size: int):
         """
         Initialises the weights and biases with random values.
+
+        :param input_size: The number of input features (neurons) in the neural network
+        :type input_size: int
+        :param hidden_size: The number of neurons in the hidden layer
+        :type hidden_size: int
+        :param output_size: The number of output neurons, corresponding to the number of classes in a classification task
+        :type output_size: int
         """
         # Initialise weights and biases
         self.weights_input_hidden = np.random.rand(input_size, hidden_size)
@@ -67,10 +116,19 @@ class NeuralNetwork:
         self.weights_hidden_output = np.random.rand(hidden_size, output_size)
         self.bias_output = np.zeros((1, output_size))
 
-    def train(self, X, y, epochs, learning_rate):
+    def train(self, X: npt.NDArray, y: npt.NDArray, epochs: int, learning_rate: float):
         """
         Performs training using back propagation.
         It takes input data (X), corresponding labels (y), the number of epochs, and the learning rate as parameters.
+
+        :param X: Input data (features)
+        :type X: npt.NDArray
+        :param y: Corresponding labels
+        :type y: npt.NDArray
+        :param epochs: Number of training epochs (iterations through the dataset)
+        :type epochs: int
+        :param learning_rate: The step size for adjusting the weights during each iteration
+        :type learning_rate: float
         """
         for epoch in range(epochs):
             print("Epoch", epoch)
@@ -87,7 +145,7 @@ class NeuralNetwork:
             # Calculate loss
             loss = y - predicted_output
 
-            # Backpropagation
+            # Back propagation
             output_error = loss * sigmoid_derivative(predicted_output)
             hidden_layer_error = output_error.dot(
                 self.weights_hidden_output.T
@@ -106,10 +164,17 @@ class NeuralNetwork:
                 np.sum(hidden_layer_error, axis=0, keepdims=True) * learning_rate
             )
 
-    def predict(self, X):
+    def predict(self, X: npt.NDArray) -> npt.NDArray:
         """
         Performs a forward pass to generate predictions for input data.
+        Making predictions on new data after the neural network has been trained.
+
+        :param X: The input data for which predictions are to be made
+        :type X: : npt.NDArray
+        :return: The predicted output for the given input data
+        :rtype: : npt.NDArray
         """
+        print(type(X))
         # Forward pass for prediction
         hidden_layer_input = np.dot(X, self.weights_input_hidden) + self.bias_hidden
         hidden_layer_output = sigmoid(hidden_layer_input)
@@ -119,6 +184,7 @@ class NeuralNetwork:
         )
         predicted_output = sigmoid(output_layer_input)
 
+        print(type(predicted_output))
         return predicted_output
 
 
@@ -155,7 +221,7 @@ train_class_labels_one_hot = labels_one_hot[train_class_indices]
 # Select the number of images to train on
 num_images_to_train = 100  # Specify the number of images to train on
 
-# Initialize neural network
+# Initialise neural network
 input_size = data.shape[1]
 hidden_size = 64
 output_size = len(class_names)
