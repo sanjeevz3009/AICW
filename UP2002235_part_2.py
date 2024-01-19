@@ -112,8 +112,9 @@ xor_perceptron.train(xor_inputs, xor_labels, problem_name="XOR")
 # Test the perceptron for the OR problem
 print("\n")
 print(
-    "As you can see from the below predicted output, the perceptron has learned to solve the OR problem, but not the XOR problem."
+    "As you can see from the below predicted output, the perceptron has learned to solve the OR problem"
 )
+print("The OR predicted output below is correct.")
 print("OR Problem:")
 for inputs in or_inputs:
     prediction = or_perceptron.predict(inputs)
@@ -122,7 +123,7 @@ for inputs in or_inputs:
 # Test the perceptron for the XOR problem
 print("\n")
 print(
-    "As you can see from the below predicted output, the perceptron has learned to solve the OR problem, but not the XOR problem."
+    "As you can see from the below predicted output, the perceptron can't solve the the XOR problem."
 )
 print("The XOR predicted output below is not correct.")
 print("XOR Problem:")

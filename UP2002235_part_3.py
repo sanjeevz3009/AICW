@@ -262,7 +262,10 @@ if __name__ == "__main__":
     # The train_network method is called to train the neural network using the OR training data
     or_nn.train_network(input_data_or, target_data_or, epochs=10000, learning_rate=0.1)
 
+    print("\n")
     print("================ Testing the Trained Network for XOR ================")
+    print("XOR problem solved correctly, which cannot be done on a perceptron/ single layer neural network.")
+    print("XOR problem can only be solved in a multi-layered perceptron.")
     for input_data, target_output in zip(input_data, target_data):
         predicted_output = xor_nn.feed_forward(input_data)
         print(
@@ -273,6 +276,7 @@ if __name__ == "__main__":
     print("\n")
 
     print("================ Testing the Trained Network for OR ================")
+    print("OR problem solved correctly.")
     for input_data, target_output in zip(input_data_or, target_data_or):
         predicted_output = or_nn.feed_forward(input_data)
         print(

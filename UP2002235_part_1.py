@@ -300,11 +300,11 @@ population, generations = genetic_algorithm(
     # The partial populate_func helps us preset the parameters which are specific to our current problem
     # That's how we can adjust our population function without handing the population size and chromosome length
     # to the genetic_algorithm function and without the need to write a completely new populate function
-    populate_func=partial(generate_population, size=20, chromosome_length=32),
+    populate_func=partial(generate_population, size=30, chromosome_length=32),
     # We hand over the target chromosome to the fitness function as a partial function
     fitness_func=partial(fitness, target_chromosome=target_chromosome),
     target_chromosome=target_chromosome,
-    generation_limit=100,
+    generation_limit=200,
 )
 
 

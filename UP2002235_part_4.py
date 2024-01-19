@@ -29,6 +29,15 @@ class MultiLayerNN(object):
         self.bias_hidden2 = np.zeros((1, 2))
         self.bias_output = np.zeros((1, 1))
 
+
+    # As the slope of ReLU activation function is zero in the negative input range, once it becomes dead,
+    # it is impossible to recover the network to learn
+    # This dying ReLU problem does not occur quite often because optimisers feed a variety of inputs to
+    # the network where in, not all the inputs are in the negative range
+        
+    # Dying ReLU problem: ReLU (rectified linear unit) neurons can sometimes be pushed into states in which
+    # They become inactive for essentially all inputs. In this state, no gradients flow backward through the
+    # neuron, and so the neuron becomes stuck in a perpetually inactive state and "dies"
     def relu(self, x: npt.NDArray) -> npt.NDArray:
         """
         Rectified Linear Unit (ReLU) activation function.
@@ -216,6 +225,7 @@ if __name__ == "__main__":
         training_data_or, training_target_data_or, epochs=10000, learning_rate=0.1
     )
 
+    print("\n")
     print("================ Testing the Trained Network for XOR ================")
     for input_data, target_output in zip(training_data_xor, training_target_data_xor):
         predicted_output = xor_nn.feed_forward(input_data)
@@ -233,3 +243,14 @@ if __name__ == "__main__":
             f"Input: {input_data}, Target Output: {target_output}, Predicted Output: {predicted_output}"
         )
     print("=====================================================================")
+
+
+# Disadvantages of using the ReLu function
+# As the slope of ReLU activation function is zero in the negative input range, once it becomes dead,
+# it is impossible to recover the network to learn
+# This dying ReLU problem does not occur quite often because optimisers feed a variety of inputs to
+# the network where in, not all the inputs are in the negative range
+    
+# Dying ReLU problem: ReLU (rectified linear unit) neurons can sometimes be pushed into states in which
+# They become inactive for essentially all inputs. In this state, no gradients flow backward through the
+# neuron, and so the neuron becomes stuck in a perpetually inactive state and "dies"
