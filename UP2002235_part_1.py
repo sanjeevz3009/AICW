@@ -3,12 +3,14 @@
 # I will be using partial functions in this code to create specialised callbacks
 # for cleaner interface for the rest of the code and to help reduce code duplication
 from functools import partial
+
 # Importing choices so we can randomly select values from a specified list
 # and set the probability of something being selected
 # Importing randint to select a random value
 # Importing randrange to randomly select values within the valued range of indices
 # Importing random to select floating numbers between 0 and 1
 from random import choices, randint, random, randrange
+
 # Importing typing module for type hinting purposes
 from typing import Callable, List, Tuple
 
