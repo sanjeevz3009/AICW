@@ -1,16 +1,14 @@
-
 # Used for serialising and deserialising Python objects in this case
-# for loading the CIFAR-10 dataset
+# for loading the CIFAR-10 dataset
 import pickle
+# Importing typing module for type hinting purposes
+from typing import List
 
 # Importing numpy to be used for numerical operations. i.e Arrays and Matrices
 import numpy as np
-
 # Importing numpy typing for type hinting purposes
 import numpy.typing as npt
 
-# Importing typing module for type hinting purposes
-from typing import List
 
 # Load CIFAR-10 dataset
 def load_cifar10():
