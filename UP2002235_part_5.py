@@ -11,6 +11,8 @@ import numpy as np
 # Importing numpy typing for type hinting purposes
 import numpy.typing as npt
 
+import matplotlib.pyplot as plt
+
 
 # Load CIFAR-10 dataset
 def load_cifar10():
@@ -131,7 +133,6 @@ class NeuralNetwork:
         :type learning_rate: float
         """
         for epoch in range(epochs):
-            print("Epoch", epoch)
             # Forward pass
             hidden_layer_input = np.dot(X, self.weights_input_hidden) + self.bias_hidden
             hidden_layer_output = sigmoid(hidden_layer_input)
@@ -174,7 +175,6 @@ class NeuralNetwork:
         :return: The predicted output for the given input data
         :rtype: : npt.NDArray
         """
-        print(type(X))
         # Forward pass for prediction
         hidden_layer_input = np.dot(X, self.weights_input_hidden) + self.bias_hidden
         hidden_layer_output = sigmoid(hidden_layer_input)
@@ -183,8 +183,6 @@ class NeuralNetwork:
             np.dot(hidden_layer_output, self.weights_hidden_output) + self.bias_output
         )
         predicted_output = sigmoid(output_layer_input)
-
-        print(type(predicted_output))
         return predicted_output
 
 
@@ -227,6 +225,7 @@ hidden_size = 64
 output_size = len(class_names)
 nn = NeuralNetwork(input_size, hidden_size, output_size)
 
+print("================ Training ================")
 # Train the neural network on the specified number of images
 for i in range(min(num_images_to_train, len(train_class_indices))):
     image_to_train = train_class_data[i].reshape(1, -1)
@@ -236,6 +235,14 @@ for i in range(min(num_images_to_train, len(train_class_indices))):
     epochs = 100
     learning_rate = 0.01
     nn.train(image_to_train, label_to_train, epochs, learning_rate)
+
+    # Print training progress
+    if (i + 1) % 10 == 0:  # Print every 10 images for example
+        print(f"Training on class '{train_class_name}', Image {i + 1}:")
+        print("Epochs:", epochs)
+        print("Learning Rate:", learning_rate)
+        print("Loss:", np.mean(np.square(label_to_train - nn.predict(image_to_train))))
+        print()
 
 # Specify the class of images to test
 test_class_name = "airplane"
@@ -247,8 +254,10 @@ test_class_data = data[test_class_indices]
 test_class_labels_one_hot = labels_one_hot[test_class_indices]
 
 # Specify the number of images to test
-num_images_to_test = 100  # Specify the number of images to test
+num_images_to_test = 5  # Specify the number of images to test
 
+print("\n")
+print("================ Testing ================")
 # Test the trained neural network on the specified number of images from the test class
 for i in range(min(num_images_to_test, len(test_class_indices))):
     test_image = test_class_data[i].reshape(1, -1)
@@ -269,3 +278,26 @@ for i in range(min(num_images_to_test, len(test_class_indices))):
     print("Predicted Class Name:", predicted_class_name)
     print("Accuracy:", accuracy, "%")
     print()
+
+# Visualise on matplotlib
+for i in range(min(num_images_to_test, len(test_class_indices))):
+    test_image = test_class_data[i].reshape(1, -1)
+    predicted_output = nn.predict(test_image)
+    predicted_label = np.argmax(predicted_output)
+
+    # Plot the test image and predicted class
+    plt.figure(figsize=(8, 4))
+
+    # Plot the test image
+    plt.subplot(1, 2, 1)
+    plt.imshow(test_class_data[i].reshape(32, 32, 3))  # Assuming CIFAR-10 images are 32x32x3
+    plt.title(f"Actual: {class_names[test_class_label]}")
+    plt.axis('off')
+
+    # Plot the predicted class
+    plt.subplot(1, 2, 2)
+    plt.imshow(nn.weights_input_hidden[:, predicted_label].reshape(32, 32, 3))  # Display weights as image
+    plt.title(f"Predicted: {class_names[predicted_label]}")
+    plt.axis('off')
+
+    plt.show()
